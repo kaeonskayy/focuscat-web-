@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusCat V29 - Fixed Version</title>
+    <meta name="theme-color" content="#ff8e8e">
+    
+    <!-- Hubungkan ke file CSS -->
+    <link rel="stylesheet" href="style.css">   
+</head>
+<body>
+
+    <!-- Main Content -->
+    <main>
+        <!-- 1. TIMER VIEW (REVISED) -->
+<section id="view-timer" class="view-section active">
+    <div class="timer-container">
+        
+        <!-- BANNER (TASK DISPLAY) -->
+        <div class="task-banner round" id="taskBanner" onclick="window.app.navigate('view-tasks', document.querySelectorAll('.nav-item')[1])">
+            <div class="task-title-display" id="activeTaskDisplay">No Task Selected</div>
+        </div>
+
+        <!-- TITIK (DI LUAR BANNER) -->
+        <div id="taskPomodoros" class="pomodoro-dots"></div>
+
+        <!-- TIMER WRAPPER -->
+        <!-- TIMER WRAPPER -->
+<div class="timer-wrapper" id="timerWrapper">
+    <svg class="timer-svg">
+        <!-- HAPUS div class="ring-bg" dan div class="ring-progress", GANTI JADI circle: -->
+        <circle class="ring-bg" cx="120" cy="120" r="110"></circle>
+        <circle class="ring-progress" id="progressRing" cx="120" cy="120" r="110"></circle>
+    </svg>
+    <div class="time-display">
+        <h1 id="timeDisplay">25:00</h1>
+    </div>
+</div>
+        </div>
+
+        <!-- MEDIA BOX -->
+        <!-- YANG BARU -->
+<div class="media-box" id="mediaBox">
+</div>
+
+        <!-- CONTROLS -->
+        <div class="timer-controls">
+            <button class="btn-circle" onclick="window.app.resetTimer()">↺</button>
+            <button class="btn-circle btn-main" id="btnStartPause" onclick="window.app.toggleTimer()">▶</button>
+            <button class="btn-circle" onclick="window.app.skipTimer()">⏭</button>
+        </div>
+    </section>
+        <!-- 2. TASKS VIEW -->
+        <section id="view-tasks" class="view-section">
+            <h2 style="margin-bottom:15px;">Tasks</h2>
+            <!-- TUGAS BARU (Input Atas) -->
+<!-- CLOSING TAG dipindah ke paling bawah -->
+<div class="task-input-group" id="taskInputGroup">
+    <input type="text" id="newTaskInput" placeholder="New task name...">
+    
+    <!-- Input Angka (#) -->
+    <input type="number" id="newTaskEst" placeholder="#" min="1">
+    
+    <!-- Tombol Tambah -->
+    <button class="btn-add" onclick="window.app.addTask()">+</button>
+</div>
+
+<!-- LIST TUGAS (Bawah) -->
+<ul class="task-list" id="taskList"></ul>
+        </section>
+                <!-- 3. JOURNAL VIEW (FIXED STRUCTURE) -->
+        <section id="view-journal" class="view-section">
+            <h2 style="margin-bottom:15px; margin-left: 10px;">Journal</h2>
+            
+            <div class="journal-layout">
+                
+                <!-- 1. SIDEBAR KIRI -->
+                <div class="journal-sidebar" id="journalSidebar">
+                    <div class="sidebar-header">
+                        <span>Riwayat</span>
+                        <button onclick="window.app.toggleJournalSidebar()">✕</button>
+                    </div>
+                    <div id="journalListHorizontal"></div>
+                </div>
+
+                <!-- 2. KOLOM KANAN (WRAPPER) -->
+                <div class="journal-right-col">
+                    
+                    <!-- A. TOP BAR -->
+                    <div class="journal-top-bar">
+                        <button class="btn-sidebar-toggle" onclick="window.app.toggleJournalSidebar()">📋 List</button>
+                        <!-- TANGGAL: Tambah ID dan Event -->
+                        <input type="date" class="journal-date" id="journalDateInput" onchange="window.app.loadJournalDate(this.value)">
+                        <button class="btn-new-entry" onclick="window.app.startNewJournalEntry()">+ Baru</button>
+                        <div class="btn-float-tools" onclick="window.app.toggleTools()">☰</div>
+                    </div>
+
+                    <!-- B. TOOLBAR STRIP (PINDAH KE SINI - BUKAN DALAM TOP BAR) -->
+                    <div class="journal-toolbar-strip">
+                        <div class="tool-btn-vertical" onclick="document.execCommand('bold')">B</div>
+                        <div class="tool-btn-vertical" onclick="document.execCommand('italic')">I</div>
+                        <input type="color" class="tool-input-color" onchange="document.execCommand('foreColor', false, this.value)">
+                        <div class="tool-btn-vertical" onclick="window.app.openCanvas()">✏️</div>
+                        <label class="tool-btn-vertical">📷<input type="file" style="display:none" onchange="window.app.insertImage(this)"></label>
+                        <div class="tool-btn-vertical" onclick="window.app.toggleFullscreen()">⛶</div>
+                        <div class="tool-btn-vertical" onclick="document.execCommand('removeFormat')">✂</div>
+                    </div>
+
+    <!-- C. EDITOR UTAMA -->
+<div class="journal-editor">
+    <div class="input-row">
+        <input type="text" id="journalTitleInput" placeholder="Judul Catatan...">
+        <button id="btnDeleteJournal" onclick="window.app.deleteCurrentJournal()" style="background:none; border:none; color:#ff4d4d; font-size:1.2rem; display:none;">🗑️</button>
+    </div>
+    <div class="journal-area" id="journalText" contenteditable="true" placeholder="Mulai tulis cerita harimu..."></div>
+    <br>
+    <button id="btnSaveJournal" class="btn-add" style="width:100%; padding:15px; font-size: 1.1rem;" onclick="window.app.saveJournal()">💾 Simpan</button>
+</div>
+            <!-- BACKDROP -->
+            <div id="sidebar-backdrop" onclick="window.app.toggleJournalSidebar()"></div>
+        </section>
+        <!-- 4. HABITS VIEW -->
+        <section id="view-habits" class="view-section">
+            <h2 style="margin-bottom:15px;">Habits</h2>
+            <div style="text-align:center; margin-bottom:15px;">
+                <button onclick="window.app.requestNotificationPermission()" style="background:var(--text); color:var(--card-bg); border:none; padding:8px 15px; border-radius:12px; font-size:0.8rem; font-weight:600; cursor:pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    🔔 Aktifkan Notifikasi Pop-up
+                </button>
+                <p style="font-size:0.7rem; color:var(--text-light); margin-top:5px;">Klik agar peringatan muncul.</p>
+            </div>
+            <div class="habit-input-group" style="display: flex; gap: 10px; align-items:center;">
+                <input type="text" id="newHabitInput" placeholder="Nama Habit (cth: Belajar)" style="flex-grow: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; color: var(--text);">
+                <input type="time" id="newHabitTime" style="width: 110px; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; background:white; color: var(--text);">
+                <button onclick="window.app.addHabit()" class="btn-add" style="padding: 12px 20px;">+</button>
+            </div>
+            <ul class="habit-list" id="habitList" style="list-style: none; padding: 0; margin: 0;"></ul>
+            <div style="margin-top:20px; text-align:center;">
+                <button onclick="window.app.resetHabits()" style="background:none; border:1px solid var(--primary); color:var(--primary); padding:8px 20px; border-radius:20px; cursor:pointer; font-size:0.8rem;">Reset Day Status</button>
+            </div>
+        </section>
+              
+        <!-- 5. STATS VIEW -->
+        <section id="view-stats" class="view-section">
+            <h2 style="margin-bottom:10px;">Statistics</h2>
+            <div class="stats-tabs">
+                <button class="tab-btn active" onclick="window.app.switchStatsTab('daily', this)">Daily</button>
+                <button class="tab-btn" onclick="window.app.switchStatsTab('weekly', this)">Weekly</button>
+                <button class="tab-btn" onclick="window.app.switchStatsTab('monthly', this)">Monthly</button>
+                <button class="tab-btn" onclick="window.app.switchStatsTab('yearly', this)">Yearly</button>
+            </div>
+            <div class="card cat-status-card" id="catStatusCard">
+                <div class="cat-avatar-section">
+                    <div class="cat-avatar" id="statsCatAvatar">😿</div>
+                    <div class="cat-level-badge" id="catLevelBadge">Mood</div>
+                </div>
+                <div class="cat-message">
+                    <h3 id="statsGreeting">Let's Focus!</h3>
+                    <p id="statsQuote">"Choose a period to view details."</p>
+                </div>
+            </div>
+            <div class="stats-summary">
+                <div class="stat-box">
+                    <div class="stat-icon">🔥</div>
+                    <h3 id="statPeriodCount">0</h3>
+                    <span id="labelPeriodCount">Sessions</span>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">⏱️</div>
+                    <h3 id="statPeriodTime">0m</h3>
+                    <span id="labelPeriodTime">Total</span>
+                </div>
+            </div>
+            <div class="card dynamic-chart-area" id="chartContainer"></div>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 style="font-size:1rem;">Task Tracker</h4>
+                    <span style="font-size:0.75rem; color:var(--text-light);" id="taskTrackerLabel">Tasks Done This Period</span>
+                </div>
+                <div class="task-stats-table-wrapper" id="taskStatsList">
+                    <span style="color:var(--text-light); font-size:0.9rem; display:block; text-align:center;">Select a period above...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. SETTINGS VIEW -->
+        <section id="view-settings" class="view-section">
+            <h2 style="margin-bottom:15px;">Settings</h2>
+            <div class="setting-group">
+                <h4>Timer</h4>
+                <div class="setting-item"><span>Work (min)</span> <input type="number" id="settingFocus" value="25" min="1" onchange="window.app.saveSettings()"></div>
+                <div class="setting-item"><span>Short Break (min)</span> <input type="number" id="settingShort" value="5" min="1" onchange="window.app.saveSettings()"></div>
+                <div class="setting-item"><span>Long Break (min)</span> <input type="number" id="settingLong" value="15" min="1" onchange="window.app.saveSettings()"></div>
+                <div class="setting-item"><span>Auto-start Next</span>
+                    <label class="switch"><input type="checkbox" id="settingAutoBreak" onchange="window.app.saveSettings()"><span class="slider"></span></label>
+                </div>
+                <div class="setting-item"><span>Timer Style</span>
+                    <select id="settingTimerStyle" onchange="window.app.saveSettings()">
+                        <option value="ring">With Ring</option>
+                        <option value="simple">Simple (No Ring)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-group">
+                <h4>Music (Custom & GDrive)</h4>
+                <div class="setting-item">
+                    <div class="setting-label">Work Music (Focus)</div>
+                    <input type="text" id="musicFocusUrl" placeholder="Link URL (GDrive/Dropbox) or File" style="width:100%; margin-bottom:5px;" onchange="window.app.saveSettings()">
+                    <div style="display:flex; align-items:center;">
+                        <label class="btn-add" style="font-size:0.7rem; padding:4px 8px;">
+                            🎵 Upload <input type="file" id="musicFocusUpload" accept="audio/*" style="display:none" onchange="window.app.handleMusicUpload('focus', this)">
+                        </label>
+                        <button class="btn-reset" onclick="window.app.clearMusic('focus')">Reset</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">Break Music</div>
+                    <input type="text" id="musicBreakUrl" placeholder="Link URL or File" style="width:100%; margin-bottom:5px;" onchange="window.app.saveSettings()">
+                    <div style="display:flex; align-items:center;">
+                        <label class="btn-add" style="font-size:0.7rem; padding:4px 8px;">
+                            🎵 Upload <input type="file" id="musicBreakUpload" accept="audio/*" style="display:none" onchange="window.app.handleMusicUpload('break', this)">
+                        </label>
+                        <button class="btn-reset" onclick="window.app.clearMusic('break')">Reset</button>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <h4>Task Banner Appearance</h4>
+                <div class="setting-item"><span>Shape (Bentuk)</span>
+                    <select id="settingBannerShape" onchange="window.app.saveSettings()">
+                        <option value="round">Round (Bulat)</option>
+                        <option value="square">Square (Kotak)</option>
+                        <option value="none">No Shape (Tanpa Bingkai)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-group">
+                <h4>Aesthetic & Appearance</h4>
+                <div class="setting-item">
+                    <span>Primary Color</span> <input type="color" id="customPrimaryColor" value="#ff8e8e" oninput="window.app.saveSettings()">
+                </div>
+                <div class="setting-item">
+                    <span>Background Color</span> <input type="color" id="customBgColor" value="#faf9f6" oninput="window.app.saveSettings()">
+                </div>
+                <div class="setting-item">
+                    <span>UI Transparency</span> 
+                    <input type="range" id="uiOpacity" style="flex:1" min="0.2" max="1" step="0.05" oninput="window.app.saveSettings()">
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">Timer Media (Max 2MB)</div>
+                    <div style="display:flex; align-items:center;">
+                        <label class="btn-add" style="font-size:0.8rem; padding:5px 10px;">
+                            Upload <input type="file" id="mediaUpload" accept="image/*,video/*" style="display:none" onchange="window.app.handleMediaUpload(this)">
+                        </label>
+                        <button class="btn-reset" onclick="window.app.clearTimerMedia()">Reset</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">Custom Background (Max 2MB)</div>
+                    <div style="display:flex; align-items:center;">
+                        <label class="btn-add" style="font-size:0.8rem; padding:5px 10px;">
+                            Upload <input type="file" id="bgUpload" accept="image/*,video/*" style="display:none" onchange="window.app.handleBgUpload(this)">
+                        </label>
+                        <button class="btn-reset" onclick="window.app.clearBg()">Reset</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">Adjust Position (Drag Mode)</div>
+                    <label class="switch">
+                        <input type="checkbox" id="settingBgDrag" onchange="window.app.toggleBgDrag(this)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item"><span>Dark Mode</span>
+                    <label class="switch"><input type="checkbox" id="settingDarkMode" onchange="window.app.toggleTheme()"><span class="slider"></span></label>
+                </div>
+            </div>
+            <div class="setting-group">
+    <h4>Data Management</h4>
+    
+    <!-- 1. BARIS ATAS (Backup & Restore Sebelah-Menyebelah) -->
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <!-- Tombol Backup (Biru) -->
+        <button onclick="window.app.exportData()" 
+                style="flex: 1; background: #3498db; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+            💾 Backup
+        </button>
+        
+        <!-- Tombol Restore (Hijau - Trigger File Input) -->
+        <!-- File input disembunyiin, Label jadi tombol -->
+        <label for="restoreFileInput" 
+               style="flex: 1; background: #2ecc71; color: white; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; text-align: center; display: block;">
+            📂 Restore
+        </label>
+        <input type="file" id="restoreFileInput" accept=".json" style="display: none" onchange="window.app.importData(this)">
+    </div>
+
+    <!-- 2. BARIS BAWAH (Reset Full Width - Merah) -->
+    <button onclick="window.app.clearData()" 
+            style="width: 100%; background: #ff4d4d; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+        🗑️ Reset All Data
+    </button>
+</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Canvas Modal -->
+    <div id="canvas-modal">
+        <div class="canvas-container">
+            <h3 style="margin-bottom:10px;">Doodle</h3>
+            <canvas id="drawingCanvas" width="300" height="200"></canvas>
+            <div class="modal-btns">
+                <button class="btn-add" style="background:#ddd; color:black; width:100px;" onclick="window.app.closeCanvas()">Cancel</button>
+                <button class="btn-add" style="width:100px;" onclick="window.app.saveDoodle()">Insert</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="window.app.navigate('view-timer', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            Timer
+        </button>
+        <button class="nav-item" onclick="window.app.navigate('view-tasks', this)">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Tasks
+        </button>
+        <button class="nav-item" onclick="window.app.navigate('view-journal', this)">
+            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+            Journal
+        </button>
+        <button class="nav-item" onclick="window.app.navigate('view-habits', this)">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.42L9 19 21 7l-1.41-1.41L9 16.17zm-6.83-6.83l-1.42-1.42L12 13l1.42 1.41L2.17 9.34zm10.42-5.17l-1.41-1.42L17 12l1.42 1.41L12.59 4.17zM3.5 4l1.42-1.41L3.5 4 6.5 6.5L11 10 12 8l-1.42-1.41L10 7.5l-1.42-1.42L7.5 5.5l-1.42 1.42L3.5 4z"/></svg>
+            Habits
+        </button>
+        <button class="nav-item" onclick="window.app.navigate('view-stats', this)">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            Stats
+        </button>
+        <button class="nav-item" onclick="window.app.navigate('view-settings', this)">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L5.09 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.58 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            Set
+        </button>
+    </nav>
+
+    <div id="toast" class="toast">Notification</div>
+
+    <!-- Hubungkan ke file JS -->
+    <script src="script.js"></script>
+</body>
+</html>

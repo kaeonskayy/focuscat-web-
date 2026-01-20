@@ -1,0 +1,1157 @@
+:root {
+    --primary: #ff8e8e;
+    --bg: #faf9f6;
+    --text: #4a4a4a;
+    --text-light: #9ca3af;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-opacity: 0.9;
+    --shadow: 0 10px 30px rgba(149, 157, 165, 0.08);
+    --radius: 24px;
+}
+[data-theme="dark"] {
+    --bg: #2c2c2c;
+    --card-bg: rgba(50, 50, 50, 0.9);
+    --text: #f0f0f0;
+    --text-light: #a0a0a0;
+    --shadow: 0 10px 30px rgba(0,0,0, 0.3);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; }
+
+body {
+    background-color: var(--bg);
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    touch-action: manipulation; 
+    cursor: default;
+}
+
+body.dragging { cursor: grab; }
+body.dragging:active { cursor: grabbing; }
+
+/* Layout */
+header {
+    padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+    background: var(--card-bg); backdrop-filter: blur(20px); box-shadow: var(--shadow);
+    z-index: 10; position: relative; border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.status-msg { font-size: 0.85rem; color: var(--text-light); font-style: italic; cursor: pointer; background: rgba(0,0,0,0.02); padding: 6px 12px; border-radius: 12px; }
+
+main { flex: 1; overflow-y: auto; position: relative; z-index: 5; padding-bottom: 80px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+.view-section { display: none; padding: 20px; max-width: 600px; margin: 0 auto; animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+.view-section.active { display: block; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Timer Section */
+.timer-container { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    min-height: auto; 
+    padding-top: 10px; 
+    
+}
+
+/* --- TASK BANNER (Fleksibel - Sesuai Isi Teks) --- */
+/* --- TASK BANNER (FIX BUG MENGIKUTI TEKS) --- */
+/* --- TASK BANNER (FLEKSIBEL TANPA BATAS TINGGI) --- */
+/* --- TASK BANNER (BORDER DYNAMIC & FLEKSIBEL) --- */
+/* --- TASK BANNER (UNITE WITH PRIMARY & TRANSPARENT & NO BORDER) --- */
+/* --- TASK BANNER (FIX: SHAPE SETTINGS WORK & AUTO-FIT TEXT) --- */
+
+/* Base Style (Kotak Pembungkus) */
+/* --- TASK BANNER (FIT TEXT SIZE - TIDAK MELEBAR FULL) --- */
+
+.task-banner {
+    /* KUNCI: Inline-block membuat kotak ikut ukuran teks, bukan lebar layar */
+    display: inline-block; 
+    text-align: center; 
+    
+    /* Ukuran mengikuti isi */
+    width: auto;
+    max-width: 90%; /* Jangan sampai mentok pinggir layar */
+    min-width: 120px; /* Minimal lebar biar ngak gepeng banget */
+    
+    /* Tinggi fleksibel */
+    height: auto; 
+    min-height: 40px;
+    
+    padding: 12px 25px;
+    margin-bottom: 25px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: var(--shadow);
+    
+    /* Warna Default */
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+}
+
+/* --- 1. Bentuk Bulat (Round) --- */
+.task-banner.round {
+    border-radius: 50px;
+}
+
+/* --- 2. Bentuk Kotak (Square) --- */
+.task-banner.square {
+    border-radius: 12px;
+}
+
+/* --- 3. Tanpa Bentuk (None) --- */
+.task-banner.none {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 5px 10px;
+    color: var(--text) !important;
+}
+
+/* --- TEKS DI BANNER --- */
+.task-banner .task-title-display {
+    display: block; /* Blok biar turun ke bawah kalau panjang */
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.4;
+    
+    /* Agar teks memecah baris kalau terlalu panjang */
+    word-wrap: break-word; 
+    word-break: break-word;
+    white-space: normal;
+    width: 100%;
+}
+
+.task-banner:active { transform: scale(0.98); }
+
+.timer-wrapper { position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
+.timer-wrapper.no-ring { width: auto; height: auto; }
+.timer-wrapper.no-ring .timer-svg { display: none; }
+.timer-wrapper.no-ring .time-display { position: static; transform: none; }
+
+.timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; position: absolute; top:0; left:0; }
+.timer-svg circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+.ring-bg { stroke: rgba(0,0,0,0.03); }
+.ring-progress { stroke: var(--primary); stroke-dasharray: 754; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+.time-display { position: absolute; text-align: center; }
+.time-display h1 { font-size: 3.2rem; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -1px; }
+
+/* --- MEDIA BOX (FINAL FIX - SHOW WHEN UPLOADED) --- */
+.media-box {
+    display: flex;
+    align-items: center; justify-content: center;
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    max-height: 250px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0, 0.05);
+    margin: 0 auto 30px auto;
+    position: relative;
+    z-index: 50;
+    /* PASTIKAN PENTING: 0 BIARADA TRANSPARAN */
+    opacity: 1;
+}
+
+/* Gambar & Video */
+.media-box img, .media-box video {
+    width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0 auto;
+}
+/* 1. Container Tombol (Yang ini buat naro tombol pas di tengah layar) */
+.timer-controls {
+    display: flex;
+    justify-content: center; /* <--- INI YANG PENTING! Biar tombol di tengah */
+    gap: 20px;
+    align-items: center;
+    z-index: 6;
+    margin-bottom: 30px;
+    width: 100%; /* Supaya dia ambil lebar penuh dan bisa ke-tengah */
+}
+
+/* 2. Tombol Kecil */
+.btn-circle {
+    width: 56px; height: 56px; border-radius: 50%; border: none;
+    background: var(--card-bg); color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.1s;
+}
+.btn-circle:active { transform: scale(0.95); }
+
+/* 3. Tombol Besar (Pause) */
+.btn-main { 
+    width: 72px; 
+    height: 72px; 
+    font-size: 2rem; 
+    background: var(--primary); 
+    color: white; 
+    box-shadow: 0 12px 25px rgba(255, 142, 142, 0.3); 
+    
+    /* --- TAMBAHKAN INI SUPAYA IKON DI TENGAH --- */
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    line-height: 1; 
+    padding: 0; 
+}
+
+/* --- STATS UI BARU --- */
+.stats-summary-big {
+    display: flex; justify-content: center; gap: 30px; margin-bottom: 20px;
+    background: var(--card-bg); padding: 20px; border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.stat-box-big {
+    text-align: center; flex: 1;
+}
+.stat-box-big h3 { font-size: 2.5rem; font-weight: 800; color: var(--primary); line-height: 1; }
+.stat-box-big span { font-size: 0.9rem; color: var(--text-light); display: block; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Hourly Stats */
+.hourly-stats {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    height: 150px; padding-top: 20px; gap: 4px;
+}
+.hour-bar {
+    width: 100%; background: var(--bg); border-radius: 4px 4px 0 0; position: relative; opacity: 0.6; transition: opacity 0.3s; border: 1px solid rgba(0,0,0,0.05); flex: 1; height: 100%;
+}
+.hour-bar .fill {
+    background: var(--primary); width: 100%; border-radius: 4px 4px 0 0; position: absolute; bottom: 0; left: 0; height: 0;
+    transition: height 0.5s ease;
+}
+.hour-bar .label {
+    position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%);
+    font-size: 0.7rem; color: var(--text-light); font-weight: 600;
+}
+.hour-bar:hover .label { color: var(--primary); }
+.hour-bar:hover { opacity: 1; background: #fff; }
+
+/* Task Table */
+.task-stats-table {
+    width: 100%; border-collapse: collapse; font-size: 0.9rem;
+}
+.task-stats-table th {
+    text-align: left; padding: 10px; color: var(--text-light); border-bottom: 2px solid var(--bg); font-weight: 600;
+}
+.task-stats-table td {
+    padding: 12px 10px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--text);
+}
+.task-stats-table tr:last-child td { border-bottom: none; }
+.task-progress-bg {
+    width: 100%; height: 6px; background: #eee; border-radius: 3px; overflow: hidden;
+}
+.task-progress-fill {
+    height: 100%; background: var(--primary); width: 0%; border-radius: 3px; transition: width 0.5s ease;
+}
+
+/* Common Card */
+.card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); backdrop-filter: blur(15px); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); transition: background 0.3s ease; }
+
+/* Tasks View */
+/* --- TASKS VIEW CSS --- */
+
+/* 1. Kotak Input (Bagian Atas) */
+/* --- TASKS VIEW (SATU BARIS RAPIH) --- */
+
+/* --- TASKS VIEW (UKURAN SAMA PERSIS DENGAN TASK LIST) --- */
+
+/* Container Input */
+/* =========================================
+   1. INPUT GROUP (Atas)
+   ========================================= */
+.task-input-group { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; /* Sejajarkan vertikal */
+    
+    background: var(--card-bg); 
+    padding: 15px;       /* Padding Utama */
+    border-radius: 20px; /* Radius Sudut */
+    box-shadow: var(--shadow); 
+    transition: all 0.3s ease; 
+    
+    /* PENTING: Paksa tinggi kotak */
+    min-height: 70px; 
+    
+    margin-bottom: 20px;
+    width: 100%; /* Pastikan lebar penuh */
+}
+
+.task-input-group.hidden { display: none; }
+
+/* Input Text */
+#newTaskInput {
+    flex: 1;
+    height: var(--task-height);
+    padding: 0 20px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 15px;
+    font-size: 1rem;
+    color: var(--text);
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    display: flex; align-items: center; line-height: 1; min-width: 0;
+}
+
+/* Input Angka (#) */
+#newTaskEst {
+    width: 56px;
+    flex-shrink: 0;
+    height: var(--task-height);
+    padding: 0;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--text);
+    text-align: center;
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    display: flex; align-items: center; justify-content: center; line-height: 1;
+}
+
+/* Tombol (+) */
+.btn-add { 
+    width: var(--task-height); 
+    height: var(--task-height);
+    flex-shrink: 0;
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    border-radius: 15px; 
+    font-size: 1.8rem; 
+    font-weight: 300; 
+    display: flex;
+    align-items: center; justify-content: center;
+    cursor: pointer; 
+    box-shadow: 0 4px 15px rgba(255, 142, 142, 0.4); 
+    transition: transform 0.1s;
+    margin: 0; padding: 0;
+}
+.btn-add:active { transform: scale(0.95); }
+
+
+/* 2. Daftar Tugas (List Bawah) */
+.task-list { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+}
+
+.task-item { 
+    background: var(--card-bg); 
+    height: var(--task-height); /* Tinggi sama dengan input di atas */
+    padding: 0 20px;
+    border-radius: 15px; 
+    margin-bottom: 12px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02); 
+    cursor: pointer; 
+    transition: transform 0.2s;
+    border: 1px solid rgba(0,0,0,0.02); 
+}
+.task-item:active { transform: scale(0.98); }
+
+/* Status Task */
+.task-item.active-task { border-left: 6px solid var(--primary); }
+.task-item.completed-task { 
+    border-left: 6px solid #2ecc71; 
+    background: rgba(46, 204, 113, 0.05); 
+    opacity: 0.7; text-decoration: line-through;
+}
+
+/* Kiri: Icon + Teks (Dari JS) */
+.task-left-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    padding-right: 10px;
+    height: 100%;
+}
+
+/* Icon Strawberry */
+.task-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Info (Judul, Counter, Progress) */
+.task-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.task-title { 
+    font-weight: 600; 
+    font-size: 1rem; 
+    display: block; 
+    line-height: 1.1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.task-meta { 
+    font-size: 0.75rem; 
+    color: var(--text-light); 
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Progress Bar Mini */
+/* --- PROGRESS BAR (BIAR NGAK GEPENG) --- */
+.task-mini-bar {
+    width: 100%; /* SUPAYA WIDTH 100PX */
+    height: 4px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex; /* Flex supaya tingginya proporsional isiinya */
+}
+.task-mini-fill { height: 100%; background: var(--primary); border-radius: 2px; }
+
+/* Kanan: Tombol Hapus */
+.task-actions { display: flex; align-items: center; }
+.task-actions button { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    color: var(--text-light); 
+    font-size: 1.5rem; 
+    padding: 5px;
+    display: flex; align-items: center;
+}
+.task-actions button:hover { color: #ff4d4d; }
+
+/* Habits View */
+.habit-input-group { display: flex; gap: 10px; background: var(--card-bg); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 20px; }
+.habit-list { list-style: none; }
+.habit-item { background: var(--card-bg); padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.habit-left { display: flex; align-items: center; gap: 15px; flex: 1; }
+.habit-check { width: 26px; height: 26px; border: 2px solid var(--primary); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.habit-check.done { background: var(--primary); border-color: var(--primary); }
+.habit-check.done::after { content: '✓'; color: white; font-size: 14px; }
+.habit-title { font-weight: 600; font-size: 1rem; }
+.habit-streak { font-size: 0.8rem; color: var(--text-light); }
+
+/* Journal View */
+.journal-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+.journal-date { font-size: 1rem; font-weight: bold; color: var(--primary); padding: 10px 20px; border: 1px solid var(--primary); border-radius: 30px; background: transparent; flex: 1; }
+.journal-list-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; -webkit-overflow-scrolling: touch; width: 100%; }
+.journal-entry-card { min-width: 80px; padding: 8px 15px; background: rgba(255,255,255,0.7); border-radius: 12px; text-align: center; border:1px solid rgba(0,0,0,0.05); cursor: pointer; font-size: 0.8rem; white-space: nowrap; transition: 0.2s; }
+.journal-entry-card.active { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-new-entry { background: var(--text); color: var(--card-bg); border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+
+.journal-editor { margin-top: 20px; }
+.journal-toolbar { display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.toolbar-btn { background: rgba(0,0,0,0.05); border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; white-space: nowrap; color: var(--text); }
+.color-picker { padding: 0; width: 30px; height: 30px; border: none; border-radius: 5px; }
+.journal-area { width: 100%; min-height: 200px; background: rgba(255,255,255,0.5); border: none; border-radius: 12px; padding: 15px; font-family: inherit; color: var(--text); overflow-y: auto; line-height: 1.6; font-size: 1rem; border: 1px solid rgba(0,0,0,0.05); }
+.journal-area img { max-width: 100%; border-radius: 8px; margin: 5px 0; }
+
+/* Canvas Modal */
+#canvas-modal { display: none; position: fixed; top:0; left:0; width:100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+.canvas-container { background: white; padding: 20px; border-radius: 15px; text-align: center; max-width: 90%; }
+canvas { border: 1px solid #eee; cursor: crosshair; touch-action: none; background: white; border-radius: 8px; width: 100%; max-width: 300px; }
+.modal-btns { margin-top: 15px; display: flex; gap: 10px; justify-content: center; }
+
+/* --- UPDATED STATS UI STYLING --- */
+
+/* 1. Cat Status Card */
+.cat-status-card {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255,255,255,0.6) 100%);
+    border-left: 5px solid var(--primary);
+    margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
+}
+.cat-avatar-section {
+    position: relative;
+    margin-right: 15px;
+}
+.cat-avatar {
+    font-size: 3rem;
+    animation: float 3s ease-in-out infinite;
+}
+.cat-level-badge {
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-weight: bold;
+}
+.cat-message h3 { margin: 0; font-size: 1.1rem; color: var(--text); }
+.cat-message p { margin: 5px 0 0; font-size: 0.85rem; color: var(--text-light); font-style: italic; }
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+/* 2. Summary Boxes Upgrade */
+.stats-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.stat-box {
+    background: var(--bg);
+    padding: 15px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+}
+.stat-icon {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 1.5rem;
+    opacity: 0.1;
+}
+.stat-box h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0;
+    line-height: 1.2;
+}
+.stat-box span {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* 3. Hourly Chart (Detailed) */
+.hourly-stats {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 120px;
+    gap: 2px;
+    padding-top: 10px;
+    overflow-x: auto; /* Biar bisa discroll kalau layar kecil */
+}
+.hour-bar {
+    flex: 1;
+    min-width: 8px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+.hour-bar:hover { background: var(--bg); transform: scaleY(1.1); z-index: 2; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+.hour-bar .fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--primary);
+    border-radius: 4px 4px 0 0;
+    opacity: 0.8;
+    transition: height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.hour-bar .label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: var(--text-light);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.hour-bar:hover .label { opacity: 1; }
+
+/* 4. Weekly Chart (Aesthetic) */
+.chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 150px;
+    padding-top: 20px;
+    gap: 10px;
+}
+.bar {
+    flex: 1;
+    background: var(--bg);
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    height: 100%; /* Base container height */
+    transition: all 0.3s ease;
+}
+.bar:hover { transform: translateY(-5px); }
+.bar .bar-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--primary);
+    border-radius: 10px 10px 0 0;
+    transition: height 0.5s ease;
+    box-shadow: 0 4px 10px rgba(255, 142, 142, 0.3);
+}
+.bar .bar-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+.bar .bar-count {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--primary);
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.bar:hover .bar-count { opacity: 1; }
+
+/* 5. Task List Mini */
+.task-stats-table-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.task-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.task-stat-item:last-child { border: none; }
+.task-stat-icon { font-size: 1.2rem; }
+.task-stat-info { flex: 1; }
+.task-stat-title { font-weight: 600; font-size: 0.9rem; display: block; }
+.task-stat-sub { font-size: 0.75rem; color: var(--text-light); }
+.task-stat-bar-bg {
+    width: 60px; height: 6px; background: #eee; border-radius: 3px; overflow: hidden;
+}
+.task-stat-bar-fill { height: 100%; background: var(--primary); }
+.stats-summary { display: flex; justify-content: space-around; text-align: center; margin-bottom: 20px; }
+.stat-box h3 { font-size: 2.2rem; color: var(--primary); }
+.stat-box span { font-size: 0.9rem; color: var(--text-light); }
+.daily-tracker { display: flex; flex-wrap: wrap; gap: 8px; }
+.tracker-badge { background: var(--bg); padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 5px; }
+.tracker-badge.done { background: var(--primary); color: white; border: none; }
+
+/* Settings View */
+.setting-group { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: var(--shadow); }
+.setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); flex-wrap: wrap; }
+.setting-item:last-child { border-bottom: none; }
+.setting-label { font-size: 0.9rem; width: 100%; margin-bottom: 5px; color: var(--text-light); }
+
+input[type="number"] { width: 60px; padding: 8px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text); }
+select { padding: 8px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text); }
+input[type="text"] { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text); }
+input[type="color"] { border: none; width: 40px; height: 40px; border-radius: 8px; background: none; padding: 0; cursor: pointer; }
+input[type="range"] { flex: 1; accent-color: var(--primary); }
+
+/* Reset Button */
+.btn-reset { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; margin-left: 8px; }
+.btn-reset:hover { background: #ff4d4d; color: white; }
+
+/* Switch */
+.switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* Bottom Nav */
+.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--card-bg); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; border-top: 1px solid rgba(255,255,255,0.1); }
+.nav-item { text-align: center; color: var(--text-light); background: none; border: none; font-size: 0.65rem; cursor: pointer; padding: 8px; width: 16%; display: flex; flex-direction: column; align-items: center; }
+.nav-item svg { display: block; width: 22px; height: 22px; margin: 0 auto 3px; fill: currentColor; }
+.nav-item.active { color: var(--primary); }
+
+/* Toast */
+.toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--card-bg); padding: 16px 30px; border-radius: 50px; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; width: 90%; font-weight: bold; font-size: 1rem; }
+.toast.error { background: #ff4d4d; color: white; }
+.toast.success { background: #2ecc71; color: white; }
+.toast.show { opacity: 1; pointer-events: auto; }
+
+/* --- TABS --- */
+.stats-tabs {
+    display: flex;
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 5px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+}
+.tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px;
+    border-radius: 12px;
+    color: var(--text-light);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tab-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* --- CALENDAR MOODS (GRID) --- */
+.mood-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+}
+.cal-cell {
+    aspect-ratio: 1;
+    background: rgba(0,0,0,0.03);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--text-light);
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+.cal-cell.today { border: 2px solid var(--primary); font-weight: bold; }
+.cal-cell:hover { transform: scale(1.1); background: var(--bg); z-index: 2; }
+.cal-date { font-size: 0.6rem; margin-bottom: 2px; }
+.cal-mood { font-size: 1.4rem; }
+
+/* --- WEEKLY CHART (Bar Style) --- */
+.weekly-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 120px;
+    gap: 8px;
+    padding-top: 10px;
+}
+.w-bar {
+    flex: 1;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    height: 100%;
+}
+.w-bar:hover { transform: translateY(-3px); }
+.w-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--primary);
+    border-radius: 8px 8px 0 0;
+    transition: height 0.5s ease;
+}
+.w-label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--text-light);
+}
+
+/* --- HOURLY (Daily) --- */
+.hourly-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 100px;
+    gap: 1px;
+    padding-top: 5px;
+    overflow-x: auto;
+}
+.h-bar {
+    flex: 1;
+    min-width: 4px;
+    background: var(--primary);
+    opacity: 0.3;
+    border-radius: 2px 2px 0 0;
+}
+.h-bar.active { opacity: 1; background: var(--primary); }
+
+/* --- TASK LIST --- */
+.task-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.05);
+}
+.task-stat-item:last-child { border: none; }
+.task-stat-info { flex: 1; }
+.task-stat-title { font-size: 0.9rem; font-weight: 600; display: block; }
+.task-stat-meta { font-size: 0.75rem; color: var(--text-light); }
+.task-mini-bar { width: 50px; height: 4px; background: #eee; border-radius: 2px; }
+.task-mini-fill { height: 100%; background: var(--primary); border-radius: 2px; }
+
+/* --- HABIT REMINDER STYLES --- */
+.habit-input-group {
+    display: flex; gap: 10px; background: var(--card-bg); padding: 15px; border-radius: 20px; 
+    box-shadow: var(--shadow); margin-bottom: 20px;
+}
+.habit-input-group input { 
+    flex: 1; border: none; background: transparent; padding: 5px; font-size: 0.9rem; 
+    color: var(--text); outline: none; 
+}
+/* Style khusus input jam biar simpel */
+input[type="time"] {
+    font-family: inherit; color: var(--text); background: rgba(0,0,0,0.05);
+}
+
+.habit-list { list-style: none; }
+.habit-item { 
+    background: var(--card-bg); padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; 
+    display: flex; justify-content: space-between; align-items: center; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02); 
+    position: relative;
+    overflow: hidden;
+}
+.habit-item.done { opacity: 0.6; }
+.habit-item.done::after {
+    content: ''; position: absolute; top:0; left:0; width:4px; height:100%; background:#2ecc71;
+}
+.habit-left { display: flex; align-items: center; gap: 15px; flex: 1; }
+.habit-check { 
+    width: 26px; height: 26px; border: 2px solid var(--primary); border-radius: 8px; 
+    cursor: pointer; display: flex; align-items: center; justify-content: center; 
+    transition: all 0.2s; flex-shrink: 0;
+}
+.habit-check.done { background: var(--primary); border-color: var(--primary); }
+.habit-check.done::after { content: '✓'; color: white; font-size: 14px; }
+
+.habit-info { flex: 1; }
+.habit-title { font-weight: 600; font-size: 1rem; display: block; }
+.habit-meta { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+.habit-reminder-tag { 
+    background: #ffecb3; color: #d35400; padding: 2px 6px; border-radius: 4px; 
+    font-size: 0.65rem; font-weight: bold; display: none;
+}
+.has-reminder .habit-reminder-tag { display: inline-block; }
+/* =========================================
+   JOURNAL CSS (CLEAN - RESPONSIVE)
+   ========================================= */
+
+/* 1. WRAPPER UTAMA JOURNAL */
+.journal-layout {
+    display: grid;
+    /* Desktop: Sidebar 260px | Sisa Ruang untuk Editor */
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    
+    /* Tinggi disesuaikan agar pas di layar */
+    height: calc(100vh - 150px); 
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* 2. SIDEBAR KIRI (List Entry) */
+.journal-sidebar {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto; /* Bisa scroll kalau list panjang */
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--shadow);
+}
+
+/* Header Sidebar */
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; color: var(--primary); padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.sidebar-header button { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-light); }
+
+/* List Item */
+.journal-entry-card { padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.03); cursor: pointer; font-size: 0.9rem; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; }
+.journal-entry-card:hover { background: rgba(0,0,0,0.06); }
+.journal-entry-card.active { background: var(--primary); color: white; }
+
+/* 3. KOLOM KANAN (Editor Area) */
+.journal-right-col {
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Penting agar Toolbar bisa floating */
+    height: 100%;
+}
+
+/* Top Bar (Tombol Tanggal & Toggle) */
+.journal-top-bar {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
+    background: var(--card-bg); padding: 10px 15px; border-radius: 15px; box-shadow: var(--shadow); flex-wrap: wrap;
+}
+.btn-sidebar-toggle { display: none; }
+.journal-date { border: 1px solid #ddd; padding: 8px; border-radius: 8px; flex: 1; font-size: 0.9rem; background: var(--bg); color: var(--text); }
+.btn-new-entry { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+
+/* Tombol Bulat (☰) untuk Buka Tools */
+.btn-float-tools {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid #ddd;
+    background: var(--bg); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.3s;
+}
+.btn-float-tools:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* 4. TOOLBAR STRIP (Floating di Kanan) */
+.journal-toolbar-strip {
+    position: absolute;
+    right: 0; top: 100px; /* Muncul agak ke bawah dari Top Bar */
+    
+    background: var(--card-bg);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 30px; /* Bentuk Pil */
+    padding: 10px 8px;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    z-index: 10;
+    
+    opacity: 0;
+    pointer-events: none; /* Jangan bisa diklik kalau sembunyi */
+    transform: translateX(20px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* State Active saat tombol ☰ dipencet */
+.journal-toolbar-strip.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+/* Tombol-tombol kecil dalam toolbar */
+.tool-btn-vertical {
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: rgba(0,0,0,0.05); color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+}
+.tool-btn-vertical:hover { background: var(--primary); color: white; transform: scale(1.1); }
+.tool-input-color { width: 36px; height: 36px; padding: 0; border: none; border-radius: 50%; overflow: hidden; cursor: pointer; }
+
+/* 5. EDITOR AREA */
+.journal-editor {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    overflow: hidden; /* Supaya editor scroll di dalam kotak */
+}
+
+.journal-editor input[type="text"] {
+    width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #eee;
+    border-radius: 8px; font-size: 1.1rem; font-weight: bold; background: var(--bg); color: var(--text);
+}
+
+#journalText {
+    flex: 1;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.4);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text);
+    min-height: 200px;
+}
+
+/* Backdrop Overlay (Hitam transparan) */
+#sidebar-backdrop {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 98; opacity: 0; transition: opacity 0.3s;
+}
+#sidebar-backdrop.active { display: block; opacity: 1; }
+
+
+/* =========================================
+   FIX MOBILE (HP) - Media Query
+   ========================================= */
+@media (max-width: 768px) {
+    .journal-layout {
+        display: flex !important;
+        flex-direction: column;
+        height: auto; /* Biar panjang ke bawah */
+    }
+
+    /* Sidebar di HP: Jadi Overlay (Nutupin layar) */
+    .journal-sidebar {
+        position: fixed; top: 0; left: 0; width: 80%; height: 100%;
+        background: var(--card-bg);
+        z-index: 99;
+        transform: translateX(-100%); /* Sembunyi di kiri layar */
+        transition: transform 0.3s ease;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+    }
+    .journal-sidebar.show { transform: translateX(0); } /* Muncul */
+
+    /* Tombol toggle list muncul di HP */
+    .btn-sidebar-toggle { display: block; }
+
+    /* Toolbar di HP: Jangan floating ke kanan, tapi taruh di bawah editor */
+    .journal-toolbar-strip {
+        position: relative; /* Posisi normal mengikuti alur */
+        top: auto; right: auto;
+        flex-direction: row; /* Susun menyamping */
+        justify-content: center;
+        width: 100%; margin-top: 10px;
+        opacity: 1; pointer-events: auto; transform: none; /* Tampilkan langsung atau pakai toggle */
+        display: none; /* Kita sembunyikan dulu, pakai toggle buat munculin */
+    }
+    .journal-toolbar-strip.show { display: flex; }
+
+    /* Editor di HP */
+    .journal-editor { height: 60vh; } /* Editor tinggi dikit */
+}
+@keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+@keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+
+input[type="time"] {
+    background-color: #fff0f3; /* Pink sangat muda */
+    color: #db2777; /* Teks warna pink tua */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+/* Ubah ikon kalender browser jadi warna pink */
+input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(25%) sepia(100%) saturate(500%) hue-rotate(300deg); /* Mengubah warna ikon jadi pink */
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+input[type="time"]:focus {
+    background-color: #fff;
+    border-color: #ff6b6b !important;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
+}
+
+/* Memastikan placeholder input text juga cantik */
+input::placeholder {
+    color: #ff9a9e;
+    opacity: 0.8;
+}
+/* --- POMODORO DOTS --- */
+/* --- NUCLEAR OPTION (TIMPA SEMUA ISI BLOK .pomodoro-dots --- */
+/* --- BUKAN STYLE YANG LAMA SEKARANG --- */
+/* --- TAMBAHKAN GANTI INI DI STYLE.CSS --- */
+/* --- MEDIA BOX (Kotak Gambar/Video) --- */
+/* --- MEDIA BOX (GAMBAR/VIDEO LURUS & RAPI) --- */
+/* --- MEDIA BOX (SUPER HIDDEN) --- */
+/* --- MEDIA BOX (FINAL FIX - BISA MUNCUL) --- */
+.media-box {
+    /* Hanya sembunyi */
+    display: none; 
+    
+    /* Ukuran Normal (Supaya saat muncul, dia punya ukuran) */
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    max-height: 250px;
+    
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px auto;
+    position: relative;
+}
+
+/* Isi Kotak (Gambar/Video) */
+.media-box img, .media-box video {
+    width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0 auto;
+}
+
+/* --- POMODORO DOTS (Titik-titik Sesi) --- */
+/* --- POMODORO DOTS (HANYA LINGKARAN - TANPA KOTAK) --- */
+.pomodoro-dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px; /* Jarak antar lingkaran */
+    
+    width: 100%;
+    max-height: 50px; /* Batas tinggi baris */
+    overflow-x: auto;
+    margin-bottom: 30px;
+    
+    /* --- STYLE KOTAK DIHAPUS SEMUA --- */
+    /* Tidak ada background, border, shadow, atau radius */
+}
+
+/* --- LINGKARAN (DOT) --- */
+.dot-item {
+    width: 8px; 
+    height: 8px;
+    
+    /* Tampilan Lingkaran */
+    background: rgba(255, 255, 255, 0.4); /* Putih agak transparan */
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    
+    border-radius: 50%; 
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+/* Lingkaran yang sudah terisi */
+.dot-item.filled {
+    background: var(--primary); /* Pink solid */
+    border-color: var(--primary);
+    opacity: 1;
+}
+
+
+
